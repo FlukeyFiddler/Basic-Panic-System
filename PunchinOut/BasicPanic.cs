@@ -229,15 +229,20 @@ namespace BasicPanic
                 return false;
             }
 
-            if(!attackSequence.attackDamagedStructure && !attackSequence.lowArmorStruck) //no structure damage and didn't strike low armour
+            if(!attackSequence.attackDamagedStructure && !attackSequence.lowArmorStruck) // no structure damage and didn't strike low armour (unclear what lowArmorStruck is)
             {
+                Logger.Logline($"attackDamagedStructure {attackSequence.attackDamagedStructure}, lowArmorStruck {attackSequence.lowArmorStruck}");
                 float totalArmor = 0, maxArmor = 0;
-
                 maxArmor = GetTotalMechArmour(mech, maxArmor);
-
                 totalArmor = GetCurrentMechArmour(mech, totalArmor);
+                float currentArmorPercent = totalArmor / maxArmor * 100;
+                Logger.Logline($"maxArmor {maxArmor}, totalArmor {totalArmor}, currentArmorPercent { currentArmorPercent}");
+                var settings = BasicPanic.Settings;
 
-                if((totalArmor / maxArmor * 100 ) + ((BasicPanic.Settings.MinimumArmourDamagePercentageRequired * maxArmor / 100) / maxArmor * 100 ) >= 100) //basically if this equals to 100%, mech didn't lose enough armour
+                var percentOfCurrentArmorDamaged = attackSequence.attackArmorDamage / currentArmorPercent;
+                float mininumDamagePerecentRequired = settings.MinimumArmourDamagePercentageRequired;
+                
+                if (percentOfCurrentArmorDamaged <= 10) // (deprecated) basically if this equals to 100%, mech didn't lose enough armour
                 {
                     return false;
                 }
